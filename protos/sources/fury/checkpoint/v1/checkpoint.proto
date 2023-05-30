@@ -1,0 +1,270 @@
+syntax = "proto3";
+
+package fury.checkpoint.v1;
+
+import "fury/assets.proto";
+import "fury/chain_events.proto";
+import "fury/events/v1/events.proto";
+import "fury/governance.proto";
+import "fury/markets.proto";
+import "fury/fury.proto";
+
+option go_package = "github.com/elysiumstation/fury/protos/fury/checkpoint/v1";
+
+// CheckpointState is the entire checkpoint serialised. Basically it is the serialisation of the Checkpoint message + hash.
+message CheckpointState {
+  bytes hash = 1;
+  bytes state = 2;
+}
+
+// Checkpoint aggregates the various engine snapshots
+message Checkpoint {
+  bytes governance = 1;
+  bytes assets = 2;
+  bytes collateral = 3;
+  bytes network_parameters = 4;
+  bytes delegation = 5;
+  bytes epoch = 6; // will just be an epoch event
+  bytes block = 7;
+  bytes rewards = 8;
+  bytes banking = 9;
+  bytes validators = 10;
+  bytes staking = 11;
+  bytes multisig_control = 12;
+  bytes market_tracker = 13;
+  bytes execution = 14;
+}
+
+// AssetEntry is a single (enabled) asset
+message AssetEntry {
+  string id = 1;
+  fury.AssetDetails asset_details = 2;
+}
+
+// Assets contains all the enabled assets as AssetEntries
+message Assets {
+  repeated AssetEntry assets = 1;
+  repeated AssetEntry pending_listing_assets = 2;
+}
+
+// AssetBalance represents the total balance of a given asset for a party
+message AssetBalance {
+  string party = 1;
+  string asset = 2;
+  string balance = 3;
+}
+
+// Collateral contains the balances per party
+message Collateral {
+  repeated AssetBalance balances = 1;
+}
+
+// NetParams contains all network parameters
+message NetParams {
+  repeated fury.NetworkParameter params = 1;
+}
+
+// Proposals will contain all accepted proposals
+message Proposals {
+  repeated fury.Proposal proposals = 1;
+}
+
+// Delegated amounts for party/node
+// `undelegate` and `epoch_seq` are only relevant for pending entries
+message DelegateEntry {
+  string party = 1;
+  string node = 2;
+  string amount = 3;
+  bool undelegate = 4;
+  uint64 epoch_seq = 5;
+}
+
+// Delegate contains all entries for a checkpoint
+message Delegate {
+  repeated DelegateEntry active = 1;
+  repeated DelegateEntry pending = 2;
+  repeated string auto_delegation = 3;
+}
+
+// Block message contains data related to block at which the checkpoint
+// was created i.e. the block height
+message Block {
+  int64 height = 1;
+}
+
+message Rewards {
+  repeated RewardPayout rewards = 1;
+}
+
+message RewardPayout {
+  int64 payout_time = 1;
+  repeated PendingRewardPayout rewards_payout = 2;
+}
+
+message PendingRewardPayout {
+  string from_account = 1;
+  string asset = 2;
+  repeated PartyAmount party_amount = 3;
+  string total_reward = 4;
+  string epoch_seq = 5;
+  int64 timestamp = 6;
+}
+
+message PartyAmount {
+  string party = 1;
+  string amount = 2;
+}
+
+message PendingKeyRotation {
+  // Relative target block height is: target block height - current block height.
+  // Useful for cross blockchain compatibility.
+  uint64 relative_target_block_height = 1;
+  string node_id = 2;
+  string new_pub_key = 3;
+  uint32 new_pub_key_index = 4;
+}
+
+message PendingEthereumKeyRotation {
+  // Relative target block height is: target block height - current block height.
+  // Useful for cross blockchain compatibility.
+  uint64 relative_target_block_height = 1;
+  string node_id = 2;
+  string new_address = 3;
+}
+
+message ScheduledTransfer {
+  fury.Transfer transfer = 1;
+  fury.AccountType account_type = 2;
+  string reference = 3;
+  fury.events.v1.Transfer oneoff_transfer = 4;
+}
+
+message ScheduledTransferAtTime {
+  int64 deliver_on = 1;
+  repeated ScheduledTransfer transfers = 2;
+}
+
+message RecurringTransfers {
+  repeated fury.events.v1.Transfer recurring_transfers = 1;
+}
+
+message Banking {
+  repeated ScheduledTransferAtTime transfers_at_time = 1;
+  RecurringTransfers recurring_transfers = 2;
+  BridgeState bridge_state = 3;
+  repeated AssetAction asset_actions = 4;
+  uint64 last_seen_eth_block = 5;
+  repeated string seen_refs = 6;
+}
+
+message BridgeState {
+  bool active = 1;
+  uint64 block_height = 2;
+  uint64 log_index = 3;
+}
+
+message Validators {
+  repeated ValidatorState validator_state = 1;
+  repeated PendingKeyRotation pending_key_rotations = 2;
+  repeated PendingEthereumKeyRotation pending_ethereum_key_rotations = 3;
+}
+
+message ValidatorState {
+  fury.events.v1.ValidatorUpdate validator_update = 1;
+  int32 status = 2;
+  uint64 eth_events_forwarded = 3;
+  int64 validator_power = 4;
+  fury.RankingScore ranking_score = 5;
+  int32 heartbeat_block_index = 6;
+  repeated bool heartbeat_block_sigs = 7;
+}
+
+message Staking {
+  repeated fury.events.v1.StakeLinking accepted = 1;
+  uint64 last_block_seen = 2;
+}
+
+message MultisigControl {
+  repeated fury.events.v1.ERC20MultiSigSignerEvent signers = 1;
+  fury.events.v1.ERC20MultiSigThresholdSetEvent threshold_set = 2;
+  uint64 last_block_seen = 3;
+}
+
+message MarketTracker {
+  repeated MarketActivityTracker market_activity = 1;
+}
+
+message MarketActivityTracker {
+  string market = 1;
+  string asset = 2;
+  repeated PartyFees maker_fees_received = 3;
+  repeated PartyFees maker_fees_paid = 4;
+  repeated PartyFees lp_fees = 5;
+  string proposer = 6;
+  repeated string bonus_paid = 7;
+  string value_traded = 8;
+  bool ready_to_delete = 9;
+}
+
+message PartyFees {
+  string party = 1;
+  string fee = 2;
+}
+
+message AssetAction {
+  string id = 1;
+  uint32 state = 2;
+  string asset = 3;
+  uint64 block_number = 4;
+  uint64 tx_index = 5;
+  string hash = 6;
+
+  fury.BuiltinAssetDeposit builtin_deposit = 7;
+  fury.ERC20Deposit erc20_deposit = 8;
+  fury.ERC20AssetList asset_list = 9;
+  fury.ERC20AssetLimitsUpdated erc20_asset_limits_updated = 10;
+  bool erc20_bridge_stopped = 11;
+  bool erc20_bridge_resumed = 12;
+}
+
+message ELSShare {
+  // Party ID of the liquidity provider.
+  string party_id = 1;
+  // The equity-like share of the liquidity provider, representing their share in the total provided liquidity expressed as a value between 0 and 1.
+  string share = 2;
+  // Amount committed. This is the total commitment made. It does not necessarily match the LP balance.
+  string supplied_stake = 3;
+  // LP stake, weighted according to the time the stake was committed and market growth.
+  string virtual_stake = 4;
+  // Average entry valuation. As time increases the weight of stake, this is the overall valuation of the current stake.
+  string avg = 5;
+}
+
+message MarketState {
+  // Unique ID for the market
+  string id = 1;
+
+  // The current equity-like share data for a market.
+  repeated ELSShare shares = 2;
+
+  // Current balance of the insurance pool.
+  string insurance_balance = 3;
+
+  // Total trade value which last determined the growth rate of the market.
+  string last_trade_value = 4;
+
+  // Total trade volume which last determined the growth rate of the market.
+  string last_trade_volume = 5;
+
+  // Succession window in nanoseconds: the timestamp when this market cannot be succeeded anymore.
+  int64 succession_window = 6;
+
+  // The underlying market should be present in case the successor market is enacted during the succession window.
+  // This field can be omitted if the market is not yet settled.
+  fury.Market market = 7;
+}
+
+message ExecutionState {
+  // Market data that should be preserved, like equity-like shares, and settled markets that have pending successor markets.
+  repeated MarketState data = 1;
+}

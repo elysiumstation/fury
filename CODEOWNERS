@@ -1,0 +1,6 @@
+*.md @edd @jeremyletang
+* @elysiumstation/core
+core/integration/features/verified/ @elysiumstation/research
+core/netparams/defaults.go @elysiumstation/research
+datanode/gateway/graphql/schema.graphql @elysiumstation/frontend @candida-d
+protos/**/*.proto @candida-d @gordsport

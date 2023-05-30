@@ -1,0 +1,53 @@
+# Fury specific entries
+
+# Exclude platforms and tools related files
+.DS_Store
+.envrc
+.idea/
+.vscode/**/*
+!.vscode/launch.json
+
+# Exclude binaries
+build/
+bin/
+*.exe
+
+#fury
+cmd/furywallet/furywallet*
+cmd/furybenchmark/furybenchmark*
+cmd/examples/nullchain/nullchain*
+cmd/data-node/__debug_bin
+data-node-amd64
+fury-amd64
+furywallet-amd64
+fury-arm64
+fury-linux
+fury-v*-arm64
+fury-v*-linux
+visor-arm64
+#cmd/*/*-dbg
+
+# Exclude files related to tests
+integration.test
+.testCoverage.html
+.testCoverage.txt
+*.tmp
+tmp/
+
+# Exclude files related to proto
+proto/*-re
+proto/**.orig
+*.pb.go-re
+gomock_reflect_*
+protos/generated/
+protos/swagger/
+
+# Exclude other random
+data/
+!protos/sources/fury/data/
+!protos/fury/data/
+*.iws
+.mypy_cache
+*.log
+*.patch
+.metals

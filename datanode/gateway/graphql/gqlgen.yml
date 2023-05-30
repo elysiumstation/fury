@@ -1,0 +1,526 @@
+---
+schema: schema.graphql
+exec:
+  filename: generated.go
+model:
+  filename: models.go
+
+skip_validation: true
+
+models:
+  String:
+    model:
+      - github.com/99designs/gqlgen/graphql.ID
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.Uint32
+  ValidatorStatus:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.ValidatorStatus
+  LiquidityProvisionStatus:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.LiquidityProvisionStatus
+  ProposalType:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.ProposalType
+  Interval:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.Interval
+  Side:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.Side
+  TradeType:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.TradeType
+  OrderType:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.OrderType
+  MarketState:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.MarketState
+  MarketTradingMode:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.MarketTradingMode
+  ProposalRejectionReason:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.ProposalRejectionReason
+  OrderRejectionReason:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.OrderRejectionReason
+  PeggedReference:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.PeggedReference
+  OrderTimeInForce:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.OrderTimeInForce
+  OrderStatus:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.OrderStatus
+  DepositStatus:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.DepositStatus
+  WithdrawalStatus:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.WithdrawalStatus
+  StakeLinkingType:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.StakeLinkingType
+  StakeLinkingStatus:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.StakeLinkingStatus
+  TransferStatus:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.TransferStatus
+  TransferType:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.TransferType
+  DispatchMetric:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.DispatchMetric
+  NodeStatus:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.NodeStatus
+  AssetStatus:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.AssetStatus
+  NodeSignatureKind:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.NodeSignatureKind
+  OracleSpecStatus:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.OracleSpecStatus
+  PropertyKeyType:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.PropertyKeyType
+  ConditionOperator:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.ConditionOperator
+  ProposalState:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.ProposalState
+  VoteValue:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.VoteValue
+  AuctionTrigger:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.AuctionTrigger
+  Order:
+    model: github.com/elysiumstation/fury/protos/fury.Order
+  OrderUpdate:
+    model: github.com/elysiumstation/fury/protos/fury.Order
+  PaginatedOrder:
+    model: github.com/elysiumstation/fury/protos/fury.Order
+  TradeUpdate:
+    model: github.com/elysiumstation/fury/protos/fury.Trade
+  Trade:
+    model: github.com/elysiumstation/fury/protos/fury.Trade
+  PriceLevel:
+    model: github.com/elysiumstation/fury/protos/fury.PriceLevel
+  MarketDepth:
+    model: github.com/elysiumstation/fury/protos/fury.MarketDepth
+  ObservableMarketDepth:
+    model: github.com/elysiumstation/fury/protos/fury.MarketDepth
+  MarketDepthUpdate:
+    model: github.com/elysiumstation/fury/protos/fury.MarketDepthUpdate
+  ObservableMarketDepthUpdate:
+    model: github.com/elysiumstation/fury/protos/fury.MarketDepthUpdate
+  Candle:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.Candle
+  Position:
+    model: github.com/elysiumstation/fury/protos/fury.Position
+  PositionUpdate:
+    model: github.com/elysiumstation/fury/protos/fury.Position
+  AccountEvent:
+    model: github.com/elysiumstation/fury/protos/fury.Account
+  AccountBalance:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AccountBalance
+  AccountDetails:
+    model: github.com/elysiumstation/fury/protos/fury.AccountDetails
+  AccountUpdate:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AccountBalance
+  MarketData:
+    model: github.com/elysiumstation/fury/protos/fury.MarketData
+  ObservableMarketData:
+    model: github.com/elysiumstation/fury/protos/fury.MarketData
+  MarginLevels:
+    model: github.com/elysiumstation/fury/protos/fury.MarginLevels
+  MarginLevelsUpdate:
+    model: github.com/elysiumstation/fury/protos/fury.MarginLevels
+  MarginEstimate:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.MarginEstimate
+  LiquidationPrice:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.LiquidationPrice
+  LiquidationEstimate:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.LiquidationEstimate
+  NodeSignature:
+    model: github.com/elysiumstation/fury/protos/fury/commands/v1.NodeSignature
+  ProposalEvent:
+    model: github.com/elysiumstation/fury/protos/fury.Proposal
+  RiskFactor:
+    model: github.com/elysiumstation/fury/protos/fury.RiskFactor
+  NetworkParameter:
+    model: github.com/elysiumstation/fury/protos/fury.NetworkParameter
+  LiquidityOrder:
+    model: github.com/elysiumstation/fury/protos/fury.LiquidityOrder
+  LiquidityProvision:
+    model: github.com/elysiumstation/fury/protos/fury.LiquidityProvision
+  LiquidityProvisionUpdate:
+    model: github.com/elysiumstation/fury/protos/fury.LiquidityProvision
+  LiquidityOrderReference:
+    model: github.com/elysiumstation/fury/protos/fury.LiquidityOrderReference
+  Future:
+    model: github.com/elysiumstation/fury/protos/fury.Future
+  TradableInstrument:
+    model: github.com/elysiumstation/fury/protos/fury.TradableInstrument
+  SimpleRiskModel:
+    model: github.com/elysiumstation/fury/protos/fury.SimpleRiskModel
+  SimpleRiskModelParams:
+    model: github.com/elysiumstation/fury/protos/fury.SimpleModelParams
+  LogNormalRiskModel:
+    model: github.com/elysiumstation/fury/protos/fury.LogNormalRiskModel
+  LogNormalModelParams:
+    model: github.com/elysiumstation/fury/protos/fury.LogNormalModelParams
+  Instrument:
+    model: github.com/elysiumstation/fury/protos/fury.Instrument
+  InstrumentMetadata:
+    model: github.com/elysiumstation/fury/protos/fury.InstrumentMetadata
+  Market:
+    model: github.com/elysiumstation/fury/protos/fury.Market
+    fields:
+      orders:
+        resolver: true
+      trades:
+        resolver: true
+      depth:
+        resolver: true
+      data:
+        resolver: true
+      candles:
+        resolver: true
+      accounts:
+        resolver: true
+      accountsConnection:
+        resolver: true
+      orderByReference:
+        resolver: true
+      liquidityProvisions:
+        resolver: true
+  Party:
+    model: github.com/elysiumstation/fury/protos/fury.Party
+    fields:
+      orders:
+        resolver: true
+      trades:
+        resolver: true
+      tradesPaged:
+        resolver: true
+      positions:
+        resolver: true
+      accounts:
+        resolver: true
+      accountsConnection:
+        resolver: true
+      margins:
+        resolver: true
+      delegations:
+        resolver: true
+  Proposal:
+    model: github.com/elysiumstation/fury/protos/fury.GovernanceData
+    fields:
+      votes:
+        resolver: true
+  ProposalRationale:
+    model: github.com/elysiumstation/fury/protos/fury.ProposalRationale
+  ProposalTerms:
+    model: github.com/elysiumstation/fury/protos/fury.ProposalTerms
+  ProposalDetail:
+    model: github.com/elysiumstation/fury/protos/fury.Proposal
+  NewMarket:
+    model: github.com/elysiumstation/fury/protos/fury.NewMarket
+  NewAsset:
+    model: github.com/elysiumstation/fury/protos/fury.NewAsset
+  UpdateAsset:
+    model: github.com/elysiumstation/fury/protos/fury.UpdateAsset
+  NewFreeform:
+    model: github.com/elysiumstation/fury/protos/fury.NewFreeform
+  UpdateMarket:
+    model: github.com/elysiumstation/fury/protos/fury.UpdateMarket
+  UpdateNetworkParameter:
+    model: github.com/elysiumstation/fury/protos/fury.UpdateNetworkParameter
+  InstrumentConfiguration:
+    model: github.com/elysiumstation/fury/protos/fury.InstrumentConfiguration
+  FutureProduct:
+    model: github.com/elysiumstation/fury/protos/fury.FutureProduct
+  Asset:
+    model: github.com/elysiumstation/fury/protos/fury.Asset
+    fields:
+      infrastructureFeeAccount:
+        resolver: true
+  Deposit:
+    model: github.com/elysiumstation/fury/protos/fury.Deposit
+  Withdrawal:
+    model: github.com/elysiumstation/fury/protos/fury.Withdrawal
+    fields:
+      txHash:
+        resolver: true
+  PeggedOrder:
+    model: github.com/elysiumstation/fury/protos/fury.PeggedOrder
+  DataSourceSpecToFutureBinding:
+    model: github.com/elysiumstation/fury/protos/fury.DataSourceSpecToFutureBinding
+  DataSourceSpecConfiguration:
+    model: github.com/elysiumstation/fury/protos/fury.DataSourceSpecConfiguration
+  OracleSpec:
+    model: github.com/elysiumstation/fury/protos/fury.OracleSpec
+  Filter:
+    model: github.com/elysiumstation/fury/protos/fury/data/v1.Filter
+  PropertyKey:
+    model: github.com/elysiumstation/fury/protos/fury/data/v1.PropertyKey
+  Condition:
+    model: github.com/elysiumstation/fury/protos/fury/data/v1.Condition
+  OracleData:
+    model: github.com/elysiumstation/fury/protos/fury.OracleData
+    fields:
+      broadcastAt:
+        resolver: true
+  Property:
+    model: github.com/elysiumstation/fury/protos/fury/data/v1.Property
+  AuctionEvent:
+    model: github.com/elysiumstation/fury/protos/fury/events/v1.AuctionEvent
+  FeeFactors:
+    model: github.com/elysiumstation/fury/protos/fury.FeeFactors
+  Fees:
+    model: github.com/elysiumstation/fury/protos/fury.Fees
+  ScalingFactors:
+    model: github.com/elysiumstation/fury/protos/fury.ScalingFactors
+  MarginCalculator:
+    model: github.com/elysiumstation/fury/protos/fury.MarginCalculator
+  Vote:
+    model: github.com/elysiumstation/fury/protos/fury.Vote
+  VoteConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.VoteConnection
+  VoteEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.VoteEdge
+  MarketTimestamps:
+    model: github.com/elysiumstation/fury/protos/fury.MarketTimestamps
+  NodeData:
+    model: github.com/elysiumstation/fury/protos/fury.NodeData
+  EpochData:
+    model: github.com/elysiumstation/fury/protos/fury.EpochData
+  Delegation:
+    model: github.com/elysiumstation/fury/protos/fury.Delegation
+  Node:
+    model: github.com/elysiumstation/fury/protos/fury.Node
+  Epoch:
+    model: github.com/elysiumstation/fury/protos/fury.Epoch
+  EpochTimestamps:
+    model: github.com/elysiumstation/fury/protos/fury.EpochTimestamps
+  Reward:
+    model: github.com/elysiumstation/fury/protos/fury.Reward
+  RewardSummary:
+    model: github.com/elysiumstation/fury/protos/fury.RewardSummary
+  StakeLinking:
+    model: github.com/elysiumstation/fury/protos/fury/events/v1.StakeLinking
+  PartyStake:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.GetStakeResponse
+  KeyRotation:
+    model: github.com/elysiumstation/fury/protos/fury/events/v1.KeyRotation
+  EthereumKeyRotationsConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.EthereumKeyRotationsConnection
+  EthereumKeyRotationEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.EthereumKeyRotationEdge
+  EthereumKeyRotation:
+    model: github.com/elysiumstation/fury/protos/fury/events/v1.EthereumKeyRotation
+  Transfer:
+    model: github.com/elysiumstation/fury/protos/fury/events/v1.Transfer
+  OneOffTransfer:
+    model: github.com/elysiumstation/fury/protos/fury/events/v1.OneOffTransfer
+  RecurringTransfer:
+    model: github.com/elysiumstation/fury/protos/fury/events/v1.RecurringTransfer
+  Statistics:
+    model: github.com/elysiumstation/fury/protos/fury/api/v1.Statistics
+  AccountType:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.AccountType
+  AccountFilter:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AccountFilter
+  AggregatedBalance:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AggregatedBalance
+  LedgerEntryField:
+    model: github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.LedgerEntryField
+  LedgerEntryFilter:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.LedgerEntryFilter
+  AggregatedLedgerEntry:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AggregatedLedgerEntry
+  AggregatedLedgerEntriesEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AggregatedLedgerEntriesEdge
+  AggregatedLedgerEntriesConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AggregatedLedgerEntriesConnection
+  Timestamp:
+    model: github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.Timestamp
+  NetworkLimits:
+    model: github.com/elysiumstation/fury/protos/fury.NetworkLimits
+  RankingScore:
+    model: github.com/elysiumstation/fury/protos/fury.RankingScore
+  RewardScore:
+    model: github.com/elysiumstation/fury/protos/fury.RewardScore
+  UpdateMarketConfiguration:
+    model: github.com/elysiumstation/fury/protos/fury.UpdateMarketConfiguration
+  UpdateMarketSimpleRiskModel:
+    model: github.com/elysiumstation/fury/protos/fury.UpdateMarketConfiguration_Simple
+  UpdateMarketLogNormalRiskModel:
+    model: github.com/elysiumstation/fury/protos/fury.UpdateMarketConfiguration_LogNormal
+  UpdateFutureProduct:
+    model: github.com/elysiumstation/fury/protos/fury.UpdateFutureProduct
+  TradeConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.TradeConnection
+  TradeEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.TradeEdge
+  PageInfo:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.PageInfo
+  MarketConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.MarketConnection
+  MarketEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.MarketEdge
+  PositionConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.PositionConnection
+  PositionEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.PositionEdge
+  PartyConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.PartyConnection
+  PartyEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.PartyEdge
+  Pagination:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.Pagination
+  OrderEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.OrderEdge
+  OrderConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.OrderConnection
+  MarginEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.MarginEdge
+  MarginConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.MarginConnection
+  MarketDataEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.MarketDataEdge
+  MarketDataConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.MarketDataConnection
+  RewardEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.RewardEdge
+  RewardsConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.RewardsConnection
+  CandleEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.CandleEdge
+  CandleDataConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.CandleDataConnection
+  DepositEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.DepositEdge
+  DepositsConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.DepositsConnection
+  WithdrawalEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.WithdrawalEdge
+  WithdrawalsConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.WithdrawalsConnection
+  AssetEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AssetEdge
+  AssetsConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AssetsConnection
+  OracleSpecEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.OracleSpecEdge
+  OracleSpecsConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.OracleSpecsConnection
+  OracleDataEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.OracleDataEdge
+  OracleDataConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.OracleDataConnection
+  LiquidityProvisionsEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.LiquidityProvisionsEdge
+  LiquidityProvisionsConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.LiquidityProvisionsConnection
+  TransferEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.TransferEdge
+  TransferConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.TransferConnection
+  ProposalEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.GovernanceDataEdge
+  ProposalsConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.GovernanceDataConnection
+  DelegationEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.DelegationEdge
+  DelegationsConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.DelegationsConnection
+  NodeEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.NodeEdge
+  NodesConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.NodesConnection
+  NetworkParameterEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.NetworkParameterEdge
+  NetworkParametersConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.NetworkParameterConnection
+  NodeSignatureEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.NodeSignatureEdge
+  NodeSignaturesConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.NodeSignaturesConnection
+  KeyRotationEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.KeyRotationEdge
+  KeyRotationConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.KeyRotationConnection
+  StakeLinkingEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.StakeLinkingEdge
+  StakesConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.StakesConnection
+  AccountEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AccountEdge
+  AccountsConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AccountsConnection
+  DateRange:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.DateRange
+  AggregatedBalanceEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AggregatedBalanceEdge
+  AggregatedBalanceConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.AggregatedBalanceConnection
+  TransactionResult:
+    model: github.com/elysiumstation/fury/protos/fury/events/v1.TransactionResult
+  HistorySegment:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.HistorySegment
+  ProtocolUpgradeProposalConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.ProtocolUpgradeProposalConnection
+  ProtocolUpgradeProposalEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.ProtocolUpgradeProposalEdge
+  ProtocolUpgradeProposal:
+    model: github.com/elysiumstation/fury/protos/fury/events/v1.ProtocolUpgradeEvent
+  ProtocolUpgradeProposalStatus:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.ProtocolUpgradeProposalStatus
+  OrderFilter:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.OrderFilter
+  CoreSnapshotConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.CoreSnapshotConnection
+  CoreSnapshotEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.CoreSnapshotEdge
+  CoreSnapshotData:
+    model: github.com/elysiumstation/fury/protos/fury/events/v1.CoreSnapshotData
+  RewardSummaryFilter:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.RewardSummaryFilter
+  EpochRewardSummaryConnection:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.EpochRewardSummaryConnection
+  EpochRewardSummaryEdge:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.EpochRewardSummaryEdge
+  EpochRewardSummary:
+    model: github.com/elysiumstation/fury/protos/fury.EpochRewardSummary
+  PositionsFilter:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.PositionsFilter
+  PositionStatus:
+    model:
+      - github.com/elysiumstation/fury/datanode/gateway/graphql/marshallers.PositionStatus
+  LedgerEntry:
+    model: github.com/elysiumstation/fury/protos/fury.LedgerEntry
+  ERC20MultiSigSignerAddedBundle:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.ERC20MultiSigSignerAddedBundle
+  ERC20MultiSigSignerRemovedBundle:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.ERC20MultiSigSignerRemovedBundle
+  NodeBasic:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.NodeBasic
+  Entities:
+    model: github.com/elysiumstation/fury/protos/data-node/api/v2.ListEntitiesResponse

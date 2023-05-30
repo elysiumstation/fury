@@ -1,0 +1,281 @@
+package cmd
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"time"
+
+	"github.com/elysiumstation/fury/cmd/furywallet/commands/cli"
+	"github.com/elysiumstation/fury/cmd/furywallet/commands/flags"
+	"github.com/elysiumstation/fury/cmd/furywallet/commands/printer"
+	vgzap "github.com/elysiumstation/fury/libs/zap"
+	"github.com/elysiumstation/fury/paths"
+	coreversion "github.com/elysiumstation/fury/version"
+	"github.com/elysiumstation/fury/wallet/api"
+	walletnode "github.com/elysiumstation/fury/wallet/api/node"
+	networkStore "github.com/elysiumstation/fury/wallet/network/store/v1"
+	"github.com/elysiumstation/fury/wallet/version"
+	"github.com/elysiumstation/fury/wallet/wallets"
+
+	"github.com/spf13/cobra"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+)
+
+var (
+	sendTransactionLong = cli.LongDesc(`
+		Send a transaction to a Fury node via the gRPC API. The transaction can be sent to
+		any node of a registered network or to a specific node address.
+
+		The transaction should be a Fury transaction formatted as a JSON payload, as follows:
+
+		'{"commandName": {"someProperty": "someValue"} }'
+
+		For vote submission, it will look like this:
+
+		'{"voteSubmission": {"proposalId": "some-id", "value": "VALUE_YES"}}'
+	`)
+
+	sendTransactionExample = cli.Examples(`
+		# Send a transaction to a registered network
+		{{.Software}} transaction send --network NETWORK --wallet WALLET --pubkey PUBKEY TRANSACTION
+
+		# Send a transaction to a specific Fury node address
+		{{.Software}} transaction send --node-address ADDRESS --wallet WALLET --pubkey PUBKEY TRANSACTION
+
+		# Send a transaction with a log level set to debug
+		{{.Software}} transaction send --network NETWORK --wallet WALLET --pubkey PUBKEY --level debug TRANSACTION
+
+		# Send a transaction with a maximum of 10 retries
+		{{.Software}} transaction send --network NETWORK --wallet WALLET --pubkey PUBKEY --retries 10 TRANSACTION
+
+		# Send a transaction with a maximum request duration of 10 seconds
+		{{.Software}} transaction send --network NETWORK --wallet WALLET --pubkey PUBKEY --max-request-duration "10s" TRANSACTION
+
+		# Send a transaction to a registered network without verifying network version compatibility
+		{{.Software}} transaction send --network NETWORK --wallet WALLET --pubkey PUBKEY --no-version-check TRANSACTION
+	`)
+)
+
+type SendTransactionHandler func(api.AdminSendTransactionParams, string, *zap.Logger) (api.AdminSendTransactionResult, error)
+
+func NewCmdSendTransaction(w io.Writer, rf *RootFlags) *cobra.Command {
+	handler := func(params api.AdminSendTransactionParams, passphrase string, log *zap.Logger) (api.AdminSendTransactionResult, error) {
+		ctx := context.Background()
+
+		furyPaths := paths.New(rf.Home)
+
+		walletStore, err := wallets.InitialiseStore(rf.Home, false)
+		if err != nil {
+			return api.AdminSendTransactionResult{}, fmt.Errorf("couldn't initialise wallets store: %w", err)
+		}
+		defer walletStore.Close()
+
+		ns, err := networkStore.InitialiseStore(furyPaths)
+		if err != nil {
+			return api.AdminSendTransactionResult{}, fmt.Errorf("couldn't initialise network store: %w", err)
+		}
+
+		if _, errDetails := api.NewAdminUnlockWallet(walletStore).Handle(ctx, api.AdminUnlockWalletParams{
+			Wallet:     params.Wallet,
+			Passphrase: passphrase,
+		}); errDetails != nil {
+			return api.AdminSendTransactionResult{}, errors.New(errDetails.Data)
+		}
+
+		sendTx := api.NewAdminSendTransaction(walletStore, ns, func(hosts []string, retries uint64, requestTTL time.Duration) (walletnode.Selector, error) {
+			return walletnode.BuildRoundRobinSelectorWithRetryingNodes(log, hosts, retries, requestTTL)
+		})
+
+		rawResult, errDetails := sendTx.Handle(ctx, params)
+		if errDetails != nil {
+			return api.AdminSendTransactionResult{}, errors.New(errDetails.Data)
+		}
+		return rawResult.(api.AdminSendTransactionResult), nil
+	}
+
+	return BuildCmdSendTransaction(w, handler, rf)
+}
+
+func BuildCmdSendTransaction(w io.Writer, handler SendTransactionHandler, rf *RootFlags) *cobra.Command {
+	f := &SendTransactionFlags{}
+
+	cmd := &cobra.Command{
+		Use:     "send",
+		Short:   "Send a transaction to a Fury node",
+		Long:    sendTransactionLong,
+		Example: sendTransactionExample,
+		RunE: func(_ *cobra.Command, args []string) error {
+			if aLen := len(args); aLen == 0 {
+				return flags.ArgMustBeSpecifiedError("transaction")
+			} else if aLen > 1 {
+				return flags.TooManyArgsError("transaction")
+			}
+			f.RawTransaction = args[0]
+
+			req, pass, err := f.Validate()
+			if err != nil {
+				return err
+			}
+
+			log, err := buildCmdLogger(rf.Output, f.LogLevel)
+			if err != nil {
+				return fmt.Errorf("failed to build a logger: %w", err)
+			}
+
+			resp, err := handler(req, pass, log)
+			if err != nil {
+				return err
+			}
+
+			switch rf.Output {
+			case flags.InteractiveOutput:
+				PrintSendTransactionResponse(w, resp, rf)
+			case flags.JSONOutput:
+				return printer.FprintJSON(w, resp)
+			}
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&f.Network,
+		"network", "n",
+		"",
+		"Network to which the transaction is sent",
+	)
+	cmd.Flags().StringVar(&f.NodeAddress,
+		"node-address",
+		"",
+		"Fury node address to which the transaction is sent",
+	)
+	cmd.Flags().StringVarP(&f.Wallet,
+		"wallet", "w",
+		"",
+		"Wallet holding the public key",
+	)
+	cmd.Flags().StringVarP(&f.PubKey,
+		"pubkey", "k",
+		"",
+		"Public key of the key pair to use for signing (hex-encoded)",
+	)
+	cmd.Flags().StringVarP(&f.PassphraseFile,
+		"passphrase-file", "p",
+		"",
+		"Path to the file containing the wallet's passphrase",
+	)
+	cmd.Flags().StringVar(&f.LogLevel,
+		"level",
+		zapcore.InfoLevel.String(),
+		fmt.Sprintf("Set the log level: %v", vgzap.SupportedLogLevels),
+	)
+	cmd.Flags().Uint64Var(&f.Retries,
+		"retries",
+		defaultRequestRetryCount,
+		"Number of retries when contacting the Fury node",
+	)
+	cmd.Flags().DurationVar(&f.MaximumRequestDuration,
+		"max-request-duration",
+		defaultMaxRequestDuration,
+		"Maximum duration the wallet will wait for a node to respond. Supported format: <number>+<time unit>. Valid time units are `s` and `m`.",
+	)
+	cmd.Flags().BoolVar(&f.NoVersionCheck,
+		"no-version-check",
+		false,
+		"Do not check for network version compatibility",
+	)
+
+	autoCompleteNetwork(cmd, rf.Home)
+	autoCompleteWallet(cmd, rf.Home, "wallet")
+	autoCompleteLogLevel(cmd)
+
+	return cmd
+}
+
+type SendTransactionFlags struct {
+	Network                string
+	NodeAddress            string
+	Wallet                 string
+	PubKey                 string
+	PassphraseFile         string
+	Retries                uint64
+	LogLevel               string
+	RawTransaction         string
+	NoVersionCheck         bool
+	MaximumRequestDuration time.Duration
+}
+
+func (f *SendTransactionFlags) Validate() (api.AdminSendTransactionParams, string, error) {
+	if len(f.Wallet) == 0 {
+		return api.AdminSendTransactionParams{}, "", flags.MustBeSpecifiedError("wallet")
+	}
+
+	if len(f.LogLevel) == 0 {
+		return api.AdminSendTransactionParams{}, "", flags.MustBeSpecifiedError("level")
+	}
+	if err := vgzap.EnsureIsSupportedLogLevel(f.LogLevel); err != nil {
+		return api.AdminSendTransactionParams{}, "", err
+	}
+
+	if len(f.NodeAddress) == 0 && len(f.Network) == 0 {
+		return api.AdminSendTransactionParams{}, "", flags.OneOfFlagsMustBeSpecifiedError("network", "node-address")
+	}
+
+	if len(f.NodeAddress) != 0 && len(f.Network) != 0 {
+		return api.AdminSendTransactionParams{}, "", flags.MutuallyExclusiveError("network", "node-address")
+	}
+
+	if len(f.PubKey) == 0 {
+		return api.AdminSendTransactionParams{}, "", flags.MustBeSpecifiedError("pubkey")
+	}
+
+	if len(f.RawTransaction) == 0 {
+		return api.AdminSendTransactionParams{}, "", flags.ArgMustBeSpecifiedError("transaction")
+	}
+
+	passphrase, err := flags.GetPassphrase(f.PassphraseFile)
+	if err != nil {
+		return api.AdminSendTransactionParams{}, "", err
+	}
+
+	// Encode transaction into a nested structure; this is a bit nasty but mirroring what happens
+	// when our json-rpc library parses a request. There's an issue (6983#) to make the use
+	// json.RawMessage instead.
+	transaction := make(map[string]any)
+	if err := json.Unmarshal([]byte(f.RawTransaction), &transaction); err != nil {
+		return api.AdminSendTransactionParams{}, "", fmt.Errorf("couldn't unmarshal transaction: %w", err)
+	}
+
+	params := api.AdminSendTransactionParams{
+		Wallet:                 f.Wallet,
+		PublicKey:              f.PubKey,
+		Network:                f.Network,
+		NodeAddress:            f.NodeAddress,
+		Retries:                f.Retries,
+		Transaction:            transaction,
+		SendingMode:            "TYPE_ASYNC",
+		MaximumRequestDuration: f.MaximumRequestDuration,
+	}
+
+	return params, passphrase, nil
+}
+
+func PrintSendTransactionResponse(w io.Writer, res api.AdminSendTransactionResult, rf *RootFlags) {
+	p := printer.NewInteractivePrinter(w)
+
+	if rf.Output == flags.InteractiveOutput && version.IsUnreleased() {
+		str := p.String()
+		str.CrossMark().DangerText("You are running an unreleased version of the Fury wallet (").DangerText(coreversion.Get()).DangerText(").").NextLine()
+		str.Pad().DangerText("Use it at your own risk!").NextSection()
+		p.Print(str)
+	}
+
+	str := p.String()
+	defer p.Print(str)
+	str.CheckMark().SuccessText("Transaction sending successful").NextSection()
+	str.Text("Transaction Hash:").NextLine().WarningText(res.TransactionHash).NextSection()
+	str.Text("Sent at:").NextLine().WarningText(res.SentAt.Format(time.ANSIC)).NextSection()
+	str.Text("Selected node:").NextLine().WarningText(res.Node.Host).NextLine()
+}
